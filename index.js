@@ -63,12 +63,30 @@ function handleSort(e) {
     let sortedData = customSort(restraunts, e.target.value);
     console.log('cards sorted ', sortedData);
     let cards = document.getElementsByClassName('.col-md-3')
-    for (let l = 0; l < cards.length; l++) {
-        document.getElementsByClassName('.col-md-3')[l].getElementsByTagName('img').src = sortedData[l].image;
+    for (let n = 0; n < cards.length; n++) {
+        cards[n].getElementsByTagName('img')[0].src = sortedData[n].image;
     }
     let cardElemets = document.getElementsByClassName('cart-text')
     for (let k = 0; k < cardElemets.length; k++) {
         cardElemets[k].querySelector('h4').innerText = sortedData[k].name;
+
+        cardElemets[k].querySelectorAll('p')[0].innerText = sortedData[k].type.length === 1 ?
+            sortedData[k].type[0] : sortedData[k].type[0] + " , " + sortedData[k].type[1]
+        cardElemets[k].querySelectorAll('p')[1].innerText = sortedData[k].ratings;
+
+        let menus = '';
+        let menuLen = sortedData[k].menu.length;
+        for (let j = 0; j < menuLen; j++) {
+            let comma = j === 0 ? ' ' : ', ';
+            menus = menus + comma + sortedData[k].menu[j];
+        }
+        cardElemets[k].querySelectorAll('p')[2].innerText = 'Menus : ' + menus;
+        // let favItems = Array.from(new Set(JSON.parse(localStorage.getItem('favts4'))));
+        // if (favItems.includes("" + favBox.getAttribute('id'))) {
+        //     favBox.setAttribute('checked', new Boolean(true));
+        // }
+
+        console.log(cardElemets[k].querySelector('input').checked)
     }
 }
 
@@ -110,7 +128,7 @@ function searchRestraurentsForVeg(checked) {
         for (let j = 0; j < cards.length; j++) {
             let card = cards[j];
             let restrauntType = card.childNodes[1].childNodes[1].textContent.toLocaleLowerCase().split(':')[1];
-            let types = restrauntType.split(',');
+            let types = restrauntType ? restrauntType.split(',') : restrauntType;
             let vegType = types.length === 1 && types[0].trim() == 'veg' ? true : false;
             if (vegType) {
                 card.className = card.className.replace(/\s+?hidden/, '');
@@ -204,9 +222,11 @@ function genearteCards(restraurentsInfo) {
 
     // p tag for rating
     pRatingTag = document.createElement('p');
+    pRatingTag.setAttribute('id', 'rating');
     pRatingTag.textContent = 'Ratings : ' + restraurentsInfo.ratings;
 
     pTypeTag = document.createElement('p');
+    pTypeTag.setAttribute('id', 'type');
     // let veg = restraurentsInfo.isVeg ? ' Veg ' : '';
     // let nonVeg = restraurentsInfo.isNonVeg ? ' NonVeg ' : '';
     // p tag for menus
@@ -221,6 +241,7 @@ function genearteCards(restraurentsInfo) {
         menus = menus + comma + restraurentsInfo.menu[j];
     }
     pMenuTag.textContent = 'Menus : ' + menus;
+    pMenuTag.setAttribute('id', 'menu');
 
     let favItems = Array.from(new Set(JSON.parse(localStorage.getItem('favts4'))));
 
@@ -228,19 +249,19 @@ function genearteCards(restraurentsInfo) {
     favBox.setAttribute('type', 'checkbox');
     favBox.setAttribute('id', restraurentsInfo.id)
     favBox.setAttribute('class', 'fav-input-box')
-    console.log('-----> ', favItems)
+    // console.log('-----> ', favItems)
     if (favItems.includes("" + favBox.getAttribute('id'))) {
         favBox.setAttribute('checked', new Boolean(true));
     }
     favBox.addEventListener('click', function (e) {
-        console.log('on changed ', e.target.id)
+        // console.log('on changed ', e.target.id)
         if (e.target && e.target.id) {
             //do something
             handleFavourate(e.target.id, e.target.checked);
         }
     });
 
-    console.log(favBox);
+    // console.log(favBox);
     let label = document.createElement('lable');
     label.innerText = 'Favorate : ';
 
